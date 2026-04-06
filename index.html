@@ -46,51 +46,6 @@
     </div>
 
 
-<script>
-(function() {
-    'use strict';
-    
-    async function processHashManually() {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        const type = params.get('type');
-        
-        if (accessToken && type === 'signup') {
-            // Limpiar URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-            
-            // Setear sesión manualmente
-            const { data, error } = await window.SupabaseClient.auth.setSession({
-                access_token: accessToken,
-                refresh_token: params.get('refresh_token')
-            });
-            
-            if (!error && data.session) {
-                sessionStorage.setItem('rf_session', JSON.stringify(data.session));
-                console.log('✅ Email confirmado manualmente');
-                window.location.replace('vinculacion.html');
-                return;
-            }
-        }
-        
-        // Resto del código igual...
-        const { data: { session } } = await window.SupabaseClient.auth.getSession();
-        if (session) {
-            sessionStorage.setItem('rf_session', JSON.stringify(session));
-            window.location.replace('vinculacion.html');
-        } else {
-            window.location.replace('register.html');
-        }
-    }
-    
-    if (window.SupabaseClient) {
-        processHashManually();
-    } else {
-        document.addEventListener('DOMContentLoaded', () => processHashManually());
-    }
-})();
-</script>
 
      
     <script src="js/lib/supabase.min.js"></script>
