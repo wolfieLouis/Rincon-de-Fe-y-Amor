@@ -130,18 +130,6 @@
             return Object.entries(map).find(([k]) => msg.includes(k))?.[1] || msg;
         }
     };
-    async function signInWithPassword(email, password) {
-    const { data, error } = await window.SupabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
     
-    if (!error && data.session) {
-        sessionStorage.setItem('rf_session', JSON.stringify(data.session));
-    }
-    
-    return { data, error };
-    }
-
     console.log('✅ [AuthService] Cargado');
 })();
