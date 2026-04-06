@@ -44,6 +44,55 @@
             <div class="footer"><p>v2.0 · Rincón de Fe y Amor</p></div>
         </div>
     </div>
+
+
+<script>
+(function() {
+    'use strict';
+    
+    async function processHashManually() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const type = params.get('type');
+        
+        if (accessToken && type === 'signup') {
+            // Limpiar URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Setear sesión manualmente
+            const { data, error } = await window.SupabaseClient.auth.setSession({
+                access_token: accessToken,
+                refresh_token: params.get('refresh_token')
+            });
+            
+            if (!error && data.session) {
+                sessionStorage.setItem('rf_session', JSON.stringify(data.session));
+                console.log('✅ Email confirmado manualmente');
+                window.location.replace('vinculacion.html');
+                return;
+            }
+        }
+        
+        // Resto del código igual...
+        const { data: { session } } = await window.SupabaseClient.auth.getSession();
+        if (session) {
+            sessionStorage.setItem('rf_session', JSON.stringify(session));
+            window.location.replace('vinculacion.html');
+        } else {
+            window.location.replace('register.html');
+        }
+    }
+    
+    if (window.SupabaseClient) {
+        processHashManually();
+    } else {
+        document.addEventListener('DOMContentLoaded', () => processHashManually());
+    }
+})();
+</script>
+
+     
     <script src="js/lib/supabase.min.js"></script>
     <script src="js/config/supabase.js"></script>
     <script src="js/utils/helpers.js"></script>
@@ -54,60 +103,7 @@
 
 
 
-     <script>
-(function() {
-    'use strict';
-    
-    // Esperar que Supabase esté inicializado
-    function handleAuthCallback() {
-        const hash = window.location.hash;
-        const hasToken = hash && (hash.includes('access_token') || hash.includes('type=signup'));
-        
-        if (!window.SupabaseClient) {
-            console.error('❌ Supabase no inicializado');
-            return;
-        }
-        
-        if (hasToken) {
-            // Consumir el token de confirmación
-            window.SupabaseClient.auth.getSession().then(({ data: { session }, error }) => {
-                if (error) {
-                    console.error('❌ Error al confirmar email:', error);
-                    window.location.href = 'register.html';
-                    return;
-                }
-                
-                if (session) {
-                    // Guardar sesión manualmente
-                    sessionStorage.setItem('rf_session', JSON.stringify(session));
-                    console.log('✅ Email confirmado, sesión guardada');
-                    window.location.href = 'vinculacion.html';
-                } else {
-                    console.warn('⚠️ No se obtuvo sesión después del callback');
-                    window.location.href = 'register.html';
-                }
-            });
-        } else {
-            // Sin token, verificar sesión existente
-            window.SupabaseClient.auth.getSession().then(({ data: { session } }) => {
-                if (session) {
-                    sessionStorage.setItem('rf_session', JSON.stringify(session));
-                    window.location.href = 'vinculacion.html';
-                } else {
-                    window.location.href = 'register.html';
-                }
-            });
-        }
-    }
-    
-    // Ejecutar cuando DOM esté listo y Supabase cargado
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', handleAuthCallback);
-    } else {
-        handleAuthCallback();
-    }
-})();
-     </script>
+     
 </body>
 </html>
 
