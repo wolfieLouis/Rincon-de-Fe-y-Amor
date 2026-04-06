@@ -5,20 +5,19 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         const el = {
-            form   : document.getElementById('registerForm'),
-            name   : document.getElementById('displayName'),
-            email  : document.getElementById('email'),
-            pwd    : document.getElementById('password'),
-            confirm: document.getElementById('confirmPassword'),
-            btn    : document.getElementById('registerBtn'),
-            msg    : document.getElementById('messageContainer'),
+            form    : document.getElementById('registerForm'),
+            name    : document.getElementById('displayName'),
+            email   : document.getElementById('email'),
+            pwd     : document.getElementById('password'),
+            confirm : document.getElementById('confirmPassword'),
+            btn     : document.getElementById('registerBtn'),
+            msg     : document.getElementById('messageContainer'),
             strength: document.getElementById('passwordStrength')
         };
 
         function showMsg(text, type = 'error') {
             if (!el.msg) return;
             el.msg.innerHTML = `<div class="message message-${type}">${text}</div>`;
-            if (type !== 'error') setTimeout(() => { el.msg.innerHTML = ''; }, 5000);
         }
 
         function setLoading(on) {
@@ -46,9 +45,10 @@
                 const r = await AuthService.register(email, pwd, name);
                 if (!r.success) { showMsg(r.error); return; }
 
-                if (r.session) AuthService.saveSession(r.session);
-                showMsg('✅ ¡Cuenta creada! Redirigiendo...', 'success');
-                setTimeout(() => { window.location.href = 'vinculacion.html'; }, 1500);
+                // Con verificación de email activa, no hay sesión aún
+                // El usuario debe confirmar su email primero
+                showMsg('✅ ¡Cuenta creada! Revisa tu correo y confirma tu email para continuar.', 'success');
+                el.form.reset();
 
             } catch (e) {
                 showMsg('Error inesperado. Intenta de nuevo.');
