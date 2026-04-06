@@ -1,4 +1,3 @@
-//js/services/auth.js
 (function () {
     'use strict';
 
@@ -14,7 +13,8 @@
                     password,
                     options: {
                         data: { display_name: displayName.trim() },
-                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/index.html'
+                        // ✅ CORREGIDO: apunta a vinculacion.html, no index.html
+                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/vinculacion.html'
                     }
                 });
 
