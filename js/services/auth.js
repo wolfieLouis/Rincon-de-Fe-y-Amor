@@ -14,7 +14,7 @@
                     options: {
                         data: { display_name: displayName.trim() },
                         // ✅ CORREGIDO: apunta a vinculacion.html, no index.html
-                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/vinculacion.html'
+                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/index.html'
                     }
                 });
 
