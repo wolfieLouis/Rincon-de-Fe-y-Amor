@@ -14,7 +14,7 @@
                     password,
                     options: {
                         data: { display_name: displayName.trim() },
-                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/vinculacion.html'
+                        emailRedirectTo: 'https://wolfielouis.github.io/Rincon-de-Fe-y-Amor/index.html'
                     }
                 });
 
@@ -74,20 +74,8 @@
             try {
                 const { data } = await _sb.auth.getSession();
                 if (data?.session?.user) return data.session.user;
-
-                const at = sessionStorage.getItem('rf_at');
-                const rt = sessionStorage.getItem('rf_rt');
-                if (!at || !rt) return null;
-
-                const { data: r, error } = await _sb.auth.setSession({ access_token: at, refresh_token: rt });
-                if (error) throw error;
-                return r?.session?.user || null;
-
-            } catch {
-                sessionStorage.removeItem('rf_at');
-                sessionStorage.removeItem('rf_rt');
                 return null;
-            }
+            } catch { return null; }
         },
 
         saveSession: function (session) {
@@ -130,6 +118,6 @@
             return Object.entries(map).find(([k]) => msg.includes(k))?.[1] || msg;
         }
     };
-    
+
     console.log('✅ [AuthService] Cargado');
 })();
