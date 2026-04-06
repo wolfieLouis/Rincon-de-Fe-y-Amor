@@ -1,4 +1,4 @@
-// js/services/auth.js
+js/services/auth.js
 (function () {
     'use strict';
 
