@@ -20,34 +20,19 @@
 
     // ── Procesar token de confirmación en la URL ────────────────
     async function handleAuthToken() {
-        const hash = window.location.hash;
-        if (!hash || !hash.includes('access_token')) return null;
-
         try {
-            const params = new URLSearchParams(hash.substring(1));
-            const access_token  = params.get('access_token');
-            const refresh_token = params.get('refresh_token');
-            const type          = params.get('type'); // 'signup' | 'recovery' | etc.
-
-            if (!access_token) return null;
-
-            // Si es recuperación de contraseña, redirige a recover
-            if (type === 'recovery') {
-                window.location.href = 'recover.html' + window.location.hash;
-                return 'redirected';
-            }
-
-            const { data, error } = await _sb.auth.setSession({ access_token, refresh_token });
+            // detectSessionInUrl:true ya procesó el token automáticamente
+            // solo esperamos a que Supabase termine y pedimos la sesión
+            const { data, error } = await _sb.auth.getSession();
             if (error) throw error;
 
             if (data?.session) {
                 AuthService.saveSession(data.session);
-                // Limpiar hash de la URL sin recargar
                 history.replaceState(null, '', window.location.pathname);
                 return data.session.user;
             }
         } catch (e) {
-            console.error('❌ [vinculacion] Error procesando token:', e);
+            console.error('❌ [vinculacion] Error obteniendo sesión:', e);
         }
         return null;
     }
