@@ -2,156 +2,104 @@
 (function () {
     'use strict';
 
-    const _sb = window.SupabaseClient;
+    document.addEventListener('DOMContentLoaded', async function () {
 
-    // ── UI helpers ──────────────────────────────────────────────
-    function showMsg(msg, type = 'error') {
-        const c = document.getElementById('messageContainer');
-        if (!c) return;
-        c.innerHTML = `<div class="message ${type}">${msg}</div>`;
-    }
+        const el = {
+            joinForm  : document.getElementById('joinForm'),
+            createForm: document.getElementById('createForm'),
+            joinBtn   : document.getElementById('joinBtn'),
+            createBtn : document.getElementById('createBtn'),
+            soloBtn   : document.getElementById('soloModeBtn'),
+            joinCode  : document.getElementById('joinCode'),
+            spaceName : document.getElementById('spaceName'),
+            msg       : document.getElementById('messageContainer')
+        };
 
-    function setLoading(btnId, loading, text) {
-        const b = document.getElementById(btnId);
-        if (!b) return;
-        b.disabled = loading;
-        b.textContent = loading ? '⏳ Cargando...' : text;
-    }
+        let currentUser = null;
 
-    // ── Procesar token de confirmación en la URL ────────────────
-    async function handleAuthToken() {
-        try {
-            // detectSessionInUrl:true ya procesó el token automáticamente
-            // solo esperamos a que Supabase termine y pedimos la sesión
-            const { data, error } = await _sb.auth.getSession();
-            if (error) throw error;
-
-            if (data?.session) {
-                AuthService.saveSession(data.session);
-                history.replaceState(null, '', window.location.pathname);
-                return data.session.user;
-            }
-        } catch (e) {
-            console.error('❌ [vinculacion] Error obteniendo sesión:', e);
+        function showMsg(text, type = 'error') {
+            if (!el.msg) return;
+            el.msg.innerHTML = `<div class="message message-${type}">${text}</div>`;
+            if (type !== 'error') setTimeout(() => { el.msg.innerHTML = ''; }, 5000);
         }
-        return null;
-    }
 
-    // ── Inicializar página ──────────────────────────────────────
-    async function init() {
-        // Esperar a que Supabase procese el token pkce de la URL
-        await new Promise(r => setTimeout(r, 1500));
+        function setLoading(btn, on, text) {
+            if (!btn) return;
+            btn.disabled    = on;
+            btn.textContent = on ? 'Cargando...' : text;
+        }
 
-        // 1. Primero procesar token si viene de confirmación de email
-        const tokenUser = await handleAuthToken();
-        if (tokenUser === 'redirected') return;
+        // Restaurar sesión
+        showMsg('Verificando sesión...', 'info');
+        currentUser = await AuthService.restoreSession();
 
-        // 2. Obtener sesión activa
-        let user = tokenUser || await AuthService.restoreSession();
-
-        if (!user) {
-            window.location.href = 'register.html';
+        if (!currentUser) {
+            window.location.href = 'index.html';
             return;
         }
 
-        // 3. Si ya tiene espacio, ir al dashboard
-        const hasSpace = await SpaceService.hasSpace(user.id);
+        el.msg.innerHTML = '';
+
+        // Si ya tiene espacio, ir al dashboard
+        const hasSpace = await SpaceService.hasSpace(currentUser.id);
         if (hasSpace) {
-            window.location.href = 'dashboard.html';
+            showMsg('Ya tienes un espacio. Redirigiendo...', 'info');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
             return;
         }
 
-        // 4. Mostrar bienvenida
-        showMsg(`✅ ¡Correo confirmado! Bienvenido/a. Ahora vincula con tu pareja.`, 'success');
+        // ── UNIRSE ────────────────────────────────
+        el.joinForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = el.joinCode?.value.trim();
+            const v    = Validators.validateSpaceCode(code);
+            if (!v.valid) { showMsg(v.message); return; }
 
-        // 5. Registrar eventos
-        bindEvents(user);
-    }
+            setLoading(el.joinBtn, true, 'Unirme');
+            const r = await SpaceService.joinSpace(v.cleanCode, currentUser.id);
+            setLoading(el.joinBtn, false, 'Unirme a espacio existente');
 
-    // ── Eventos de formularios ──────────────────────────────────
-    function bindEvents(user) {
+            if (r.success) {
+                showMsg(`✅ ¡Vinculado! Redirigiendo...`, 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+            } else {
+                showMsg(r.error);
+            }
+        });
 
-        // — Unirse con código —
-        const joinForm = document.getElementById('joinForm');
-        if (joinForm) {
-            joinForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const code = document.getElementById('joinCode')?.value?.trim().toUpperCase();
+        // ── CREAR ─────────────────────────────────
+        el.createForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = el.spaceName?.value.trim();
+            const v    = Validators.validateCreateSpaceForm(name);
+            if (!v.valid) { showMsg(v.message); return; }
 
-                if (!code || code.length < 13) {
-                    showMsg('Ingresa un código válido (formato: ABC123-XYZ789)');
-                    return;
-                }
+            setLoading(el.createBtn, true, 'Crear');
+            const r = await SpaceService.createSpace(name, currentUser.id);
+            setLoading(el.createBtn, false, 'Crear mi espacio');
 
-                setLoading('joinBtn', true, 'Unirme a espacio existente');
-                showMsg('');
+            if (r.success) {
+                showMsg(`✅ Espacio creado. Código: ${r.data.code}`, 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+            } else {
+                showMsg(r.error);
+            }
+        });
 
-                const result = await SpaceService.joinSpace(code, user.id);
+        // ── MODO SOLO ─────────────────────────────
+        el.soloBtn?.addEventListener('click', async () => {
+            if (!confirm('¿Crear espacio individual? Podrás vincular tu pareja después.')) return;
 
-                if (result.success) {
-                    showMsg('✅ ¡Vinculado! Redirigiendo...', 'success');
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-                } else {
-                    showMsg(result.error || 'Error al unirse al espacio');
-                    setLoading('joinBtn', false, 'Unirme a espacio existente');
-                }
-            });
-        }
+            setLoading(el.soloBtn, true, 'Modo solo');
+            const r = await SpaceService.createSoloSpace(currentUser.id, currentUser.email);
+            setLoading(el.soloBtn, false, '📖 Modo solo (espacio individual)');
 
-        // — Crear espacio nuevo —
-        const createForm = document.getElementById('createForm');
-        if (createForm) {
-            createForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('spaceName')?.value?.trim();
-
-                if (!name || name.length < 2) {
-                    showMsg('Ingresa un nombre para el espacio (mínimo 2 caracteres)');
-                    return;
-                }
-
-                setLoading('createBtn', true, 'Crear mi espacio');
-                showMsg('');
-
-                const result = await SpaceService.createSpace(name, user.id);
-
-                if (result.success) {
-                    showMsg('✅ ¡Espacio creado! Redirigiendo...', 'success');
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-                } else {
-                    showMsg(result.error || 'Error al crear el espacio');
-                    setLoading('createBtn', false, 'Crear mi espacio');
-                }
-            });
-        }
-
-        // — Modo solo —
-        const soloBtn = document.getElementById('soloModeBtn');
-        if (soloBtn) {
-            soloBtn.addEventListener('click', async () => {
-                soloBtn.disabled = true;
-                soloBtn.textContent = '⏳ Cargando...';
-                showMsg('');
-
-                const result = await SpaceService.createSoloSpace(user.id, user.email);
-
-                if (result.success) {
-                    showMsg('✅ ¡Espacio individual creado! Redirigiendo...', 'success');
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-                } else {
-                    showMsg(result.error || 'Error al crear espacio individual');
-                    soloBtn.disabled = false;
-                    soloBtn.textContent = '📖 Modo solo (espacio individual)';
-                }
-            });
-        }
-    }
-
-    // ── Arrancar ────────────────────────────────────────────────
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
+            if (r.success) {
+                showMsg('✅ Modo solo activado. Redirigiendo...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+            } else {
+                showMsg(r.error);
+            }
+        });
+    });
 })();
