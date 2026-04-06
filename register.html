@@ -1,0 +1,60 @@
+
+<!-- ==========================================
+     register.html — REGISTRO
+     ========================================== -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro — Rincón de Fe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <main class="auth-container">
+        <header class="auth-header">
+            <a href="index.html" class="back-link">← Volver al login</a>
+        </header>
+        <section class="auth-form-wrapper">
+            <div class="auth-form-header">
+                <h1>✨ Crear cuenta</h1>
+                <p class="subtitle">Comienza tu camino de fe</p>
+            </div>
+            <form id="registerForm" novalidate>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="displayName" placeholder="Tu nombre" required autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="email" placeholder="tu@correo.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" required autocomplete="new-password">
+                    <div id="passwordStrength" class="password-strength"></div>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar contraseña</label>
+                    <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" required autocomplete="new-password">
+                </div>
+                <div id="messageContainer"></div>
+                <button type="submit" id="registerBtn" class="btn-primary">Registrarme</button>
+            </form>
+            <footer class="auth-footer">
+                <p>¿Ya tienes cuenta? <a href="index.html" class="link-primary">Inicia sesión</a></p>
+                <p class="terms"><small>Al registrarte aceptas nuestros términos y condiciones</small></p>
+            </footer>
+        </section>
+    </main>
+    <script src="js/lib/supabase.min.js"></script>
+    <script src="js/config/supabase.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/services/auth.js"></script>
+    <script src="js/services/space.js"></script>
+    <script src="js/pages/register.js"></script>
+</body>
+</html>
+

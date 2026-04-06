@@ -1,0 +1,56 @@
+<!-- ==========================================
+     index.html — LOGIN
+     ========================================== -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rincón de Fe y Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="title">
+                <h1>🙏 Rincón de Fe</h1>
+                <p>Un espacio de fe y amor</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="email" placeholder="tu@email.com" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary" id="loginBtn">Iniciar sesión</button>
+            </form>
+
+            <div style="text-align:center;margin-top:16px">
+                <a href="recover.html" class="link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <div class="divider"><span>O</span></div>
+            <a href="register.html" class="btn-secondary">Crear cuenta nueva</a>
+            <div class="divider"><span>O</span></div>
+            <a href="vinculacion.html" class="btn-secondary">🔗 Vincular con pareja</a>
+
+            <div class="footer"><p>v2.0 · Rincón de Fe y Amor</p></div>
+        </div>
+    </div>
+    <script src="js/lib/supabase.min.js"></script>
+    <script src="js/config/supabase.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/services/auth.js"></script>
+    <script src="js/services/space.js"></script>
+    <script src="js/pages/login.js"></script>
+</body>
+</html>
+

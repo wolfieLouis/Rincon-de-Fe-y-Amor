@@ -1,0 +1,147 @@
+<!-- ==========================================
+     vinculacion.html — VINCULAR PAREJA
+     ========================================== -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vincular pareja — Rincón de Fe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <a href="index.html" class="link" style="display:inline-block;margin-bottom:20px">← Volver al login</a>
+
+            <div class="title">
+                <h1>🔗 Vincular con pareja</h1>
+                <p>Conecta con tu ser amado</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <form id="joinForm">
+                <div class="input-group">
+                    <label>Código de tu pareja</label>
+                    <input type="text" id="joinCode" placeholder="ABC123-XYZ789" maxlength="13" autocomplete="off">
+                </div>
+                <button type="submit" class="btn-primary" id="joinBtn">Unirme a espacio existente</button>
+            </form>
+
+            <div class="divider"><span>O</span></div>
+
+            <form id="createForm">
+                <div class="input-group">
+                    <label>Nombre de la pareja</label>
+                    <input type="text" id="spaceName" placeholder="Ej: Luismi y Lía">
+                </div>
+                <button type="submit" class="btn-secondary btn-outline" id="createBtn">Crear mi espacio</button>
+            </form>
+
+            <div class="divider"><span>O</span></div>
+            <button id="soloModeBtn" class="btn-secondary">📖 Modo solo (espacio individual)</button>
+
+            <div class="footer"><p>Al vincular, podrán compartir oraciones y gratitudes</p></div>
+        </div>
+    </div>
+    <script src="js/lib/supabase.min.js"></script>
+    <script src="js/config/supabase.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/services/auth.js"></script>
+    <script src="js/services/space.js"></script>
+    <script src="js/pages/vinculacion.js"></script>
+</body>
+</html>
+
+
+<!-- ==========================================
+     dashboard.html — DASHBOARD
+     ========================================== -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rincón de Fe y Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sb-head">
+            <div class="sb-couple">
+                <div class="sb-avatar" id="sbAvatarMe">?</div>
+                <div class="sb-connector">❤️</div>
+                <div class="sb-avatar partner" id="sbAvatarPartner">?</div>
+                <div>
+                    <div class="sb-name" id="sbSpaceName">Mi espacio</div>
+                    <div class="sb-role">Rincón de Fe y Amor</div>
+                </div>
+            </div>
+            <div class="sb-code">
+                🔗 <span id="sbCode">———</span>
+                <button class="sb-copy" id="sbCopyBtn">📋</button>
+            </div>
+        </div>
+        <div class="sb-menu">
+            <div class="sb-section">Principal</div>
+            <button class="sb-item active" data-module="home">
+                <div class="sb-ico">🏠</div> Inicio
+            </button>
+            <button class="sb-item" data-module="oraciones">
+                <div class="sb-ico">🙏</div> Oraciones
+            </button>
+            <button class="sb-item" data-module="gratitud">
+                <div class="sb-ico">🕊️</div> Gratitud
+            </button>
+            <button class="sb-item" data-module="aliento">
+                <div class="sb-ico">💌</div> Aliento
+            </button>
+            <button class="sb-item" data-module="metas">
+                <div class="sb-ico">🎯</div> Metas
+            </button>
+            <div class="sb-section">Más</div>
+            <button class="sb-item" data-module="fechas">
+                <div class="sb-ico">📅</div> Fechas especiales
+            </button>
+            <button class="sb-item" data-module="perfil">
+                <div class="sb-ico">👤</div> Perfil
+            </button>
+        </div>
+        <div class="sb-foot">
+            <button class="sb-logout" id="logoutBtn">🚪 Cerrar sesión</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <button class="hamburger" id="hamburgerBtn">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="h-date" id="headerDate">—</div>
+        <div class="h-right">
+            <button class="h-btn" id="notifBtn">🔔</button>
+            <button class="h-avatar" id="headerAvatar">?</button>
+        </div>
+    </div>
+
+    <div class="content" id="content">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            Cargando...
+        </div>
+    </div>
+
+    <script src="js/lib/supabase.min.js"></script>
+    <script src="js/config/supabase.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/services/auth.js"></script>
+    <script src="js/services/space.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+</body>
+</html>
