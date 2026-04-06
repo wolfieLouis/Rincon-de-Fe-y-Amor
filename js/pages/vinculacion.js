@@ -39,6 +39,9 @@
 
     // ── Inicializar página ──────────────────────────────────────
     async function init() {
+        // Esperar a que Supabase procese el token pkce de la URL
+        await new Promise(r => setTimeout(r, 1500));
+
         // 1. Primero procesar token si viene de confirmación de email
         const tokenUser = await handleAuthToken();
         if (tokenUser === 'redirected') return;
