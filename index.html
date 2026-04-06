@@ -51,6 +51,63 @@
     <script src="js/services/auth.js"></script>
     <script src="js/services/space.js"></script>
     <script src="js/pages/login.js"></script>
+
+
+
+     <script>
+(function() {
+    'use strict';
+    
+    // Esperar que Supabase esté inicializado
+    function handleAuthCallback() {
+        const hash = window.location.hash;
+        const hasToken = hash && (hash.includes('access_token') || hash.includes('type=signup'));
+        
+        if (!window.SupabaseClient) {
+            console.error('❌ Supabase no inicializado');
+            return;
+        }
+        
+        if (hasToken) {
+            // Consumir el token de confirmación
+            window.SupabaseClient.auth.getSession().then(({ data: { session }, error }) => {
+                if (error) {
+                    console.error('❌ Error al confirmar email:', error);
+                    window.location.href = 'register.html';
+                    return;
+                }
+                
+                if (session) {
+                    // Guardar sesión manualmente
+                    sessionStorage.setItem('rf_session', JSON.stringify(session));
+                    console.log('✅ Email confirmado, sesión guardada');
+                    window.location.href = 'vinculacion.html';
+                } else {
+                    console.warn('⚠️ No se obtuvo sesión después del callback');
+                    window.location.href = 'register.html';
+                }
+            });
+        } else {
+            // Sin token, verificar sesión existente
+            window.SupabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    sessionStorage.setItem('rf_session', JSON.stringify(session));
+                    window.location.href = 'vinculacion.html';
+                } else {
+                    window.location.href = 'register.html';
+                }
+            });
+        }
+    }
+    
+    // Ejecutar cuando DOM esté listo y Supabase cargado
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', handleAuthCallback);
+    } else {
+        handleAuthCallback();
+    }
+})();
+     </script>
 </body>
 </html>
 
